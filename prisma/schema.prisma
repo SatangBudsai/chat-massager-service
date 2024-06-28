@@ -10,7 +10,7 @@ datasource db {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model app_management {
-  id           BigInt         @id @default(autoincrement())
+  id           Int         @id @default(autoincrement())
   secret_key   String         @unique
   created_time DateTime       @default(now()) @db.Timestamptz(6)
   domain       String?
@@ -25,53 +25,52 @@ model app_management {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model conversation {
-  id                   BigInt                @id @default(autoincrement())
+  id                   Int                 @id @default(autoincrement())
   secret_key           String
   type_code            conversation_type?
-  created_time         DateTime              @default(now()) @db.Timestamptz(6)
-  update_time          DateTime?             @db.Timestamptz(6)
-  app_management       app_management        @relation(fields: [secret_key], references: [secret_key], onDelete: Cascade)
-  conversation_members conversation_members?
+  created_time         DateTime               @default(now()) @db.Timestamptz(6)
+  update_time          DateTime?              @db.Timestamptz(6)
+  app_management       app_management         @relation(fields: [secret_key], references: [secret_key], onDelete: Cascade, map: "conversation_app_management_fk")
+  conversation_members conversation_members[]
   massage              massage[]
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model conversation_members {
-  id              BigInt       @id @default(autoincrement())
-  conversation_id BigInt
+  id              Int       @id @default(autoincrement())
+  conversation_id Int
   created_time    DateTime     @default(now()) @db.Timestamptz(6)
   update_time     DateTime?    @db.Timestamptz(6)
-  conversation    conversation @relation(fields: [id], references: [id], onDelete: Cascade)
+  user_id         String
+  conversation    conversation @relation(fields: [conversation_id], references: [id], onDelete: Cascade, map: "conversation_members_conversation_fk")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model massage {
-  id              BigInt         @id @default(autoincrement())
+  id              Int         @id @default(autoincrement())
   secret_key      String
   massage         String?
   user_read       Json?
   created_time    DateTime       @default(now()) @db.Timestamptz(6)
   update_time     DateTime?      @db.Timestamp(6)
-  user_send_id    BigInt?
-  conversation_id BigInt?
-  conversation    conversation?  @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
-  app_management  app_management @relation(fields: [secret_key], references: [secret_key], onDelete: Cascade)
-  user            user?          @relation(fields: [user_send_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_send_id    String?
+  conversation_id Int?
+  app_management  app_management @relation(fields: [secret_key], references: [secret_key], onDelete: Cascade, map: "massage_app_management_fk")
+  conversation    conversation?  @relation(fields: [conversation_id], references: [id], onDelete: Cascade, map: "massage_conversation_fk")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model user {
-  id              BigInt         @id @default(autoincrement())
+  id              Int         @id @default(autoincrement())
   secret_key      String
   user_unique_key String
   name            String?
   profile         String?
   created_time    DateTime       @default(now()) @db.Timestamptz(6)
   update_time     DateTime?      @db.Timestamptz(6)
-  massage         massage[]
   app_management  app_management @relation(fields: [secret_key], references: [secret_key], onDelete: Cascade)
 }
 

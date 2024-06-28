@@ -1,12 +1,11 @@
+import { massage } from '@prisma/client';
 import { Module } from '@nestjs/common';
-import { AppController } from './controllers/app.controller';
-import { AppService } from './services/app.service';
-import { DocController } from './controllers/doc.controller';
-import { DocService } from './services/doc.service';
+import { DocController } from './controllers/massage.controller';
+import { MassageService } from './services/massage.service';
 import { prisma } from './config/prisma';
 @Module({
   imports: [],
-  controllers: [AppController, DocController],
-  providers: [prisma, AppService, DocService],
+  controllers: [DocController],
+  providers: [prisma, MassageService],
 })
 export class AppModule {}
